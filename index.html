@@ -8,28 +8,44 @@
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/6.2.0/foundation.min.css">
 	<style type="text/css">
 		body { text-align: center; }
+		.row { max-width: 35rem; }
+		footer p { font-size: small; color: gray; }
 	</style>
 </head>
 <body>
-	<div class="row column">
+	<header class="row column">
 		<h1>Engo</h1>
 		<hr>
-	</div>
+	</header>
 	<div class="row column">
 		<p>
-			Engo is a 2D game engine written in <a href="https://golang.org/" target="_blank">Go</a>. It uses the Entity-Component-System paradigm. The code is available on <a href="https://github.com/EngoEngine/engo" target="_blank">GitHub</a>. 
+			Engo is an open-source 2D game engine written in <a href="https://golang.org/" target="_blank">Go</a>. It uses the Entity-Component-System paradigm. The code is available on <a href="https://github.com/EngoEngine/engo" target="_blank">GitHub</a>. If you encounter problems, found bugs, or want to request a feature, you can <a href="https://github.com/EngoEngine/engo/issues" target="_blank">do that here</a>. 
 		</p>
 		<p>
-			We're currently still developing this website at <a href="https://github.com/EngoEngine/engoengine.github.io" target="_blank">GitHub</a>, so 
-			please be patient with us. 
+			We're currently still developing <a href="https://github.com/EngoEngine/engoengine.github.io" target="_blank">this website at GitHub</a>, so 
+			please be patient with us. Ideas and feature requests for the website may be filed <a href="" target="_blank">here</a>. 
+		</p>
+		<p>
+			Donations will be used to pay for the domain registration. 
 		</p>
 		<p>
 			<a href="https://gitter.im/EngoEngine/engo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img alt="gitter.im" src="https://badges.gitter.im/EngoEngine/engo.svg"></a>
 		</p>
-		<p>
+		<p style="height: 20px">
 			<a class="github-button" href="https://github.com/EngoEngine/engo" data-count-href="/EngoEngine/engo/stargazers" data-count-api="/repos/EngoEngine/engo#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star EngoEngine/engo on GitHub">Star</a>
 		</p>
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="ZX6VE39JCLHSQ">
+				<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+				<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+			</form>
 	</div>
+
+	<footer class="row column">
+		<hr>
+		<p>&copy; 2016 EngoEngine - MIT Licensed
+	</footer>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/foundation/6.2.0/foundation.min.js"></script>
