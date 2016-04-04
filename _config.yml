@@ -1,0 +1,10 @@
+title: Engo
+email: harrison@theshoebridges.com
+description: > # this means to ignore newlines until "baseurl:"
+    An open-source 2D game engine written in Go following the Entity-Component-System paradigm.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://engo.io" # the base hostname & protocol for your site
+github_username: EngoEngine
+
+# Build settings
+markdown: kramdown
