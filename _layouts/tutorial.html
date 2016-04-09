@@ -2,12 +2,16 @@
 
 <html lang="en" class="no-js">
     {% include head.html %}
+    <title>{{page.number}} &raquo; {{page.title}} in engo</title>
     </head>
 
     <body>
         {% include header.html %}
 
         <article>
+        <div class="row column">
+            <h2><small>Tutorial {{page.number}}</small><br>{{page.title}}</h2>
+        </div>
         <div class="row column">
             {{ content }}
         </div>
