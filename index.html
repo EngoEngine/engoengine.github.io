@@ -1,0 +1,22 @@
+---
+layout: default
+title: Welcome
+---
+
+<h2>{{ title }}</h2>
+
+<p>Engo is an open-source 2D game engine written in <a href="https://golang.org" target="_blank">Go</a>. It uses the Entity-Component-System paradigm. The code is available on <a href="https://github.com/EngoEngine/engo" target="_blank">GitHub</a>. If you encounter any problems, find any bugs, or want to request a feature, you can <a href="https://github.com/EngoEngine/engo/issues/new" target="_blank">open an issue</a> or chat with us on <a href="https://gitter.im/EngoEngine/engo">gitter</a>. </p>
+
+<p>We're currently still developing this website (it's on <a href="https://github.com/EngoEngine/engoengine.github.io" target="_blank">GitHub</a> too!), so please be patient while we begin to fill it out. Ideas and content requestes can be filed <a href="https://github.com/EngoEngine/engoengine.github.io/issues/new" target="_blank">here</a>. </p>
+
+<h2>Tutorials</h2>
+
+<ul class="button-group stacked">
+{% for tut in site.categories.tutorials reversed %}
+<li><a class="button" href="{{tut.url}}">{{ tut.title }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Links</h2>
+
+{% include links.html %}
