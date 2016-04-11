@@ -1,0 +1,12 @@
+.highlight .kn { color: blue }
+.highlight .kd { color: blue }
+.highlight .kt { color: blue }
+.highlight .k  { color: blue }
+.highlight .s  { color: green }
+.highlight .p  { font-weight: bold }
+.highlight .o  { font-weight: bold }
+.highlight .c1 { color: gray; }
+.highlight .mi { color: darkorange }
+
+code { background-color: #f0f0f0; border: initial; font-family: 'Source Code Pro', monospace; }
+pre code { background-color: initial; display: block; border: 1px solid #999; }
