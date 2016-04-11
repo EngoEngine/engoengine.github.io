@@ -8,11 +8,15 @@ number: 1
 In this tutorial, we will create our first window in `engo`.
 
 > #### Recap
-> Remember what we did in the last tutorial?
+> Remember what we did in [the last tutorial](/tutorials/00-foreword)?
 > We created the directory `$GOPATH/github.com/EngoEngine/TrafficManager` - and will be working from this directory
 > from now on. All `go`-commands will be executed from this working directory. You will probably be
 > working from some similar directory. 
-
+ 
+> #### Final Code
+> The final code **for tutorial 1** is available 
+> [here at GitHub](https://github.com/EngoEngine/TrafficManager/tree/01-hello-world). 
+ 
 ### Our first file
 As with all Go-projects, we usually have one main file, and a few other packages we're using. We shall create that
 single main file in this tutorial. We shall call it `traffic.go`, but you may give it any other name you want. 
@@ -39,7 +43,7 @@ see, there are two parameters to this function: one of type `RunOptions`, where 
 > #### Scenes
 > Scenes are the barebone of `engo`: they contain pretty much all other things within the game. You should have multiple
 > scenes and switch between them: i.e. one for the main menu, another for the loading screen, and yet another for the
-> ingame experience. Specifically, a `Scene` contains **one** `World`, a collection of multiple `System`s and a 
+> in-game experience. Specifically, a `Scene` contains **one** `World`, a collection of multiple `System`s and a 
 > magnitude of `Entity`s - we will be creating those in the next tutorial.  
 
 The easiest way to output "Hello World" within `engo`, is by having this `traffic.go` file:
@@ -123,6 +127,24 @@ Rendering something consists of three things:
 * The Entity (you can have a lot of these);
 * Two Components (`RenderComponent` and `SpaceComponent`).
 
+#### ECS
+The three different types mentioned here, form the ECS (Entity Component System). The idea is quite simple: you have
+a lot of entities (objects). These can have different values and variables - these form the different components each
+entity can have. Entities which have a `SpaceComponent` for example, have some information as to their location 
+(in the game*space*). These entities and components do nothing at all. They are just glorified data containers. A
+`Component` can have variables (and values for those variables), and an `Entity` is just a glorified `[]Component`. 
+
+**Doing** something, is something only systems are allowed to. They can change/add/remove entities, as well as change/add/remove any
+components on those entities. They can change values like the location-values within the `SpaceComponent`. You can have
+multiple systems, and each of them has its own task. Each frame, these systems are called so they can do things. They
+will usually do things with entities. The `RenderSystem` is one of the system we have made, which already has a lot of
+OpenGL-calls builtin (so you don't have to worry about those just yet). You will learn about creating your own
+`System` in [tutorial 2](/tutorials/02-first-system). 
+
+[This YouTube video](https://www.youtube.com/watch?v=BvEK9-CU5Og) gives a (short) visual explanation of the 
+ECS-paradigm, and why it's so much better than what he used to use. It doesn't talk about systems that much, but more
+about the modularity of the entities. 
+
 #### Adding the System
 In order to add the `RenderSystem` to our `engo`-game, we want to add it within the `Setup` function of our `Scene`. 
 
@@ -141,14 +163,14 @@ More speficially, an instance of the `RenderSystem` is added to the `World` of t
 
 #### Adding the Entity
 After we've added the `RenderSystem` to the `World`, we are now ready to create our `Entity` and add it as well. `ECS`
-has a helper function called `ecs.NewEntity([]string{...})`, which allows you to easily create new entities. It 
+has a helper function called `ecs.NewEntity(...)`, which allows you to easily create new entities. It 
 requires one argument: a list of names of `System`s you want to associate it with. Basically, it says: this `System` is
 allowed to (and usually supposed to) read/write my values. 
 
 > ##### NewEntity
 > Creating the Entity is as simple as:
 > {% highlight go %}
-entity := ecs.NewEntity([]string{"RenderSystem"})
+entity := ecs.NewEntity("RenderSystem")
 {% endhighlight %}
 
 Now for the `Component`s: every `Entity` has them. They are the only way of giving value / meaning to entities. We
@@ -228,3 +250,7 @@ It our game looks like this:
 <figcaption>After changing the background color</strong></figcaption>
 </a>
 </figure>
+
+<div class="button-group stacked">
+<a class="button" href="/tutorials/02-first-system">Continue to Tutorial 2: <i>Our First System</i> &raquo;</a>
+</div>
