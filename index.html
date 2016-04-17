@@ -10,11 +10,20 @@ title: Welcome
 <p>We're currently still developing this website (it's on <a href="https://github.com/EngoEngine/engoengine.github.io" target="_blank">GitHub</a> too!), so please be patient while we begin to fill it out. Ideas and content requestes can be filed <a href="https://github.com/EngoEngine/engoengine.github.io/issues/new" target="_blank">here</a>. </p>
 
 <h2>Tutorials</h2>
+<p>This is our full blown tutorial series.</p>
 
 <ul class="button-group stacked">
 {% for tut in site.categories.tutorials reversed %}
 <li><a class="button" href="{{tut.url}}">{{ tut.title }}</a></li>
 {% endfor %}
+</ul>
+
+<h2>Conceptual Explanations</h2>
+<p>These are links to all of our explanations on how certain concepts in Engo work.</p>
+
+<ul class="button-group stacked">
+<li><a class="button" href="/concepts/animation.html">Animation</a></li>
+<li><a class="button" href="/concepts/camera.html">Camera</a></li>
 </ul>
 
 <h2>Links</h2>
