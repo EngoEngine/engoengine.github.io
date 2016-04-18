@@ -343,3 +343,7 @@ this:
 <figcaption>The result of tutorial 2, being able to place multiple cities</strong></figcaption>
 </a>
 </figure>
+
+<div class="button-group stacked">
+<a class="button" href="/tutorials/03-camera-movement">Continue to Tutorial 3: <i>Camera Movement</i> &raquo;</a>
+</div>
