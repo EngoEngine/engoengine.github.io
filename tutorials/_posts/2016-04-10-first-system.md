@@ -36,23 +36,12 @@ A `System` is anything that implements all these functions:
 // should iterate over its Entities on `Update`, in any way 
 // suitable for the current implementation.
 type System interface {
-	// Type returns a unique string identifier, usually 
-	// something like "RenderSystem", "CollisionSystem"...
-	Type() string
-	// Priority is used to create the order in which Systems 
-	// (in the World) are processed
-	Priority() int
-
-	// New is the initialisation of the System
-	New(*World)
 	// Update is ran every frame, with `dt` being the time
 	// in seconds since the last frame
 	Update(dt float32)
 
-	// AddEntity adds a new Entity to the System
-	AddEntity(entity *Entity)
-	// RemoveEntity removes an Entity from the System
-	RemoveEntity(entity *Entity)
+	// Remove removes an Entity from the System
+	Remove(ecs.BasicEntity)
 }
 {% endhighlight %}
 
@@ -61,28 +50,8 @@ Let's start off with a very simple implementation of this interface:
 {% highlight go %}
 type CityBuildingSystem struct {}
 
-// Type returns a unique string identifier, usually 
-// something like "RenderSystem", "CollisionSystem"...
-func (*CityBuildingSystem) Type() string { 
-    return "CityBuildingSystem" 
-}
-
-// Priority is used to create the order in which Systems 
-// (in the World) are processed
-func (*CityBuildingSystem) Priority() int { 
-    return 0 
-}
-
-// AddEntity is called whenever an Entity is added to the
-// World, which "requires" this System
-func (*CityBuildingSystem) AddEntity(*ecs.Entity) {}
-
-// RemoveEntity is called whenever an Entity is removed from
-// the World, which "requires" this System
-func (*CityBuildingSystem) RemoveEntity(*ecs.Entity) {}
-
-// New is the initialisation of the System
-func (*CityBuildingSystem) New(*ecs.World) {}
+// Remove is called whenever an Entity is removed from the World, in order to remove it from this sytem as well
+func (*CityBuildingSystem) Remove(ecs.BasicEntity) {}
 
 // Update is ran every frame, with `dt` being the time
 // in seconds since the last frame
@@ -91,7 +60,8 @@ func (*CityBuildingSystem) Update(dt float32) {}
 {% endhighlight %}
 
 Our `CityBuildingSystem` builds *Cities* on top of the cursor. This requires use of the keyboard and mouse. At first, 
-we don't need to worry about entities, so we'll ignore the `AddEntity` and `RemoveEntity` functions for now. 
+we don't need to worry about entities, so we'll ignore the `Remove` function for now. We haven't added any entities,
+so we can safely ignore removing them.  
 
 Let's keep **code quality** in mind, and create a *separate package* for our Systems, called `systems`. This means we create
 the directory `$GOPATH/github.com/EngoEngine/TrafficManager/systems`. Within this, we create a new file, with the 
@@ -106,7 +76,7 @@ the `Entity` we created last week.
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you 
 // to add entities and systems to your Scene.
-func (*myGame) Setup(world *ecs.World) {
+func (*myScene) Setup(world *ecs.World) {
 	engo.SetBackground(color.White)
 
 	world.AddSystem(&systems.CityBuildingSystem{})
@@ -116,7 +86,10 @@ func (*myGame) Setup(world *ecs.World) {
 
 > ##### How do we know it works?
 > At the moment, we can't be sure it actually works, right?
-> Let's change the `New` function of our `CityBuildingSystem` to this:
+> Each system can optionally implement `New(*eces.World)`, which will be called whenever the System is added to the
+> scene. 
+> 
+> Let's create a `New` function for our `CityBuildingSystem`  like this:
 > {% highlight go %}
 // New is the initialisation of the System
 func (*CityBuildingSystem) New(*ecs.World) {
@@ -164,23 +137,27 @@ Now we know *when* to spawn a *City*, we can actually write the code to do so.
 
 Remember the code we used for the large *City*-icon we removed? 
 {% highlight go %}
-entity := ecs.NewEntity("RenderSystem")
+city := City{BasicEntity: ecs.NewBasic()}
 
-entity.AddComponent(&engo.SpaceComponent{
+city.SpaceComponent = engo.SpaceComponent{
     Position: engo.Point{10, 10},
     Width: 303,
     Height: 641,
-})
+}
 
 texture := engo.Files.Image("city.png")
-entity.AddComponent(engo.NewRenderComponent(
+city.RenderComponent = engo.NewRenderComponent(
     texture,
     engo.Point{1, 1},
     "city texture",
-))
+)
 
-world.AddEntity(entity)
-
+for _, system := range world.Systems() {
+    switch sys := system.(type) {
+    case *engo.RenderSystem:
+        sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
+    }
+}
 {% endhighlight %}
 
 There are a few things we want to change, before using this in our `CityBuildingSystem`:
@@ -195,18 +172,18 @@ As stated, we can easily change the size, by changing the numbers. However, chan
 instead of `1`:
 
 {% highlight go %}
-entity.AddComponent(&engo.SpaceComponent{
+city.SpaceComponent = engo.SpaceComponent{
     Position: engo.Point{10, 10},
     Width: 30,
     Height: 64,
-})
+}
 
 texture := engo.Files.Image("city.png")
-entity.AddComponent(engo.NewRenderComponent(
+city.RenderComponent = engo.NewRenderComponent(
     texture,
     engo.Point{0.1, 0.1},
     "city texture",
-))
+)
 {% endhighlight %}
 
 #### The location
@@ -239,8 +216,13 @@ This one needs to hold a `MouseComponent`, at which the results/data will be sav
 We first will update our `CityBuildingSystem` to contain the new `Entity`:
 
 {% highlight go %}
+type MouseTracker struct {
+    ecs.BasicEntity
+    engo.MouseComponent
+}
+
 type CityBuildingSystem struct {
-	mouseTracker *ecs.Entity
+	mouseTracker MouseTracker
 }
 {% endhighlight %}
 
@@ -252,87 +234,81 @@ this `CityBuildingSystem`:
 func (cb *CityBuildingSystem) New(w *ecs.World) {
 	fmt.Println("CityBuildingSystem was added to the Scene")
 	
-	cb.mouseTracker = ecs.NewEntity("MouseSystem")
-	cb.mouseTracker.AddComponent(&engo.MouseComponent{Track: true})
-	w.AddEntity(cb.mouseTracker)
+	cb.mouseTracker.BasicEntity = ecs.NewBasic()
+	cb.mouseTracker.MouseComponent = engo.MouseComponent{Track: true}
+	
+	for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *engo.MouseSystem:
+			sys.Add(&cb.mouseTracker.BasicEntity, &cb.mouseTracker.MouseComponent, nil, nil)
+		}
+	}
 }
 {% endhighlight %}
 
 Note that we added the `Track: true` variable to the `MouseComponent`. This allows us to know the position of the
 mouse, regardless of where it is. If we were to leave it at `false` (the default), it would only contain anything
-useful if the mouse was hovering the `Entity`. 
+useful if the mouse was hovering the `Entity`. We are also giving two parameters `nil` within the `Add` function
+of the `MouseSystem`. That is because (as described in the documentation of that `Add` function), one can also provide
+a `SpaceComponent` and `RenderComponent`, if one wants to know specifics about that particular entity (like 
+hover-events). This is not our intention at the moment, we just want to know about the position of the cursor. Therefore
+we can safely pass `nil` for those two parameters. 
 
 ##### Getting information from the MouseSystem
-We now have a reference to the `mouseTracker` entity. However, how do we access the `MouseComponent` we added to the
-entity? There are two methods for that, both available at the `Entity`-level: `entity.Component` and 
-`engi.ComponentFast`. The first one uses `reflect`, and therefore allows for more readable syntax. The second one
-doesn't use `reflect`, and is therefore in return **a lot** faster (think 100-1000 times faster). 
-
-First we shall explain the `ComponentFast` method:
-{% highlight go %}
-var (
-    mouse *engo.MouseComponent
-    ok bool
-)
-
-if mouse, ok = cb.mouseTracker.ComponentFast(mouse).(*engo.MouseComponent); !ok {
-    return
-} 
-{% endhighlight %}
-
-You simply create a variable `*engo.MouseComponent` and a boolean variable. Then you set assign them to the return-value
-of `ComponentFast` (meaning: `ComponentFast` returns some kind of `Component`-interface, and we'll be casting it to
-`*engo.MouseComponent` to be sure it's the correct one). If this somehow fails, `ok` will be false, and we'll stop
-processing the `CityBuildingSystem` for this frame - because we cannot do anything if we don't know where the cursor is. 
-
-Now as for the `Component` method:
-
-{% highlight go %}
-var mouse *engo.MouseComponent
-if !cb.mouseTracker.Component(&mouse) {
-    return
-}
-{% endhighlight %}
-
-The syntax looks much cleaner: you simply define it, and try to fill it with the correct information. If this fails, 
-we again stop processing the `CityBuildingSystem` for this frame. *Again, note that this runs much slower.* 
-
-If we were to use the `ComponentFast` method, the entire `Update` function would look something like this:
+The `MouseSystem` updates the `mouseTracker.MouseComponent` every frame. Everything we need to know, is in there. 
 
 {% highlight go %}
 // Update is ran every frame, with `dt` being the time
 // in seconds since the last frame
 func (cb *CityBuildingSystem) Update(dt float32) {
-  if engo.Keys.Get(engo.F1).JustPressed() {
-    fmt.Println("The gamer pressed F1")
-    entity := ecs.NewEntity("RenderSystem")
+	if engo.Keys.Get(engo.F1).JustPressed() {
+		fmt.Println("The gamer pressed F1")
 
-    var (
-      mouse *engo.MouseComponent
-      ok bool
-    )
+		city := City{ecs.NewBasic()}
 
-    if mouse, ok = cb.mouseTracker.ComponentFast(mouse).(*engo.MouseComponent); !ok {
-      return
-    }
+		city.SpaceComponent = engo.SpaceComponent{
+			Position: engo.Point{cb.mouseTracker.MouseComponent.MouseX, cb.mouseTracker.MouseComponent.MouseY},
+			Width:    30,
+			Height:   64,
+		}
 
-    entity.AddComponent(&engo.SpaceComponent{
-      Position: engo.Point{mouse.MouseX, mouse.MouseY},
-      Width: 30,
-      Height: 64,
-    })
+		texture := engo.Files.Image("city.png")
+		city.RenderComponent = engo.NewRenderComponent(
+			texture,
+			engo.Point{0.1, 0.1},
+			"city texture",
+		)
 
-    texture := engo.Files.Image("city.png")
-    entity.AddComponent(engo.NewRenderComponent(
-      texture,
-      engo.Point{0.1, 0.1},
-      "city texture",
-    ))
-
-    cb.world.AddEntity(entity)
-  }
+		for _, system := range world.Systems() {
+			switch sys := system.(type) {
+			case *engo.RenderSystem:
+				sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
+			}
+		}
+	}
 }
 {% endhighlight %}
+
+But we still don't have a `world` reference within our `Update` function. We are given one inside our `New` function,
+so let's save that reference. 
+
+{% highlight go %}
+type CityBuildingSystem struct {
+	world *ecs.World
+
+	mouseTracker MouseTracker
+}
+
+// New is the initialisation of the System
+func (cb *CityBuildingSystem) New(w *ecs.World) {
+	cb.world = w
+	fmt.Println("CityBuildingSystem was added to the Scene")
+
+	// ...
+}
+{% endhighlight %}
+
+Now, we can reference it by saying `cb.world`, within our `Update` function. 
 
 Now, if we were to run this whole project, and place a few cities using the **F1**-key, we would get something like
 this:

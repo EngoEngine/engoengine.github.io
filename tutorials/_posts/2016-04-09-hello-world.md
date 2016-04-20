@@ -56,29 +56,18 @@ import (
 	"engo.io/ecs"
 )
 
-type myGame struct {}
+type myScene struct {}
 
 // Type uniquely defines your game type
-func (*myGame) Type() string { return "myGame" }
+func (*myScene) Type() string { return "myGame" }
 
 // Preload is called before loading any assets from the disk,
 // to allow you to register / queue them
-func (*myGame) Preload() {}
+func (*myScene) Preload() {}
 
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
-func (*myGame) Setup(*ecs.World) {}
-
-// Show is called whenever the other Scene becomes inactive,
-// and this one becomes the active one
-func (*myGame) Show() {}
-
-// Hide is called when an other Scene becomes active
-func (*myGame) Hide() {}
-
-// Exit is called when the game receives a close event
-// handle all your cleanup logic here
-func (*myGame) Exit() {}
+func (*myScene) Setup(*ecs.World) {}
 
 func main() {
 	opts := engo.RunOptions{
@@ -86,7 +75,7 @@ func main() {
 		Width:  400,
 		Height: 400,
 	}
-	engo.Run(opts, &myGame{})
+	engo.Run(opts, &myScene{})
 }
 {% endhighlight %}
 
@@ -119,7 +108,7 @@ Applying this, we get:
 {% highlight go %}
 // Preload is called before loading any assets from the disk,
 // to allow you to register / queue them
-func (*myGame) Preload() {
+func (*myScene) Preload() {
 	engo.Files.Add("assets/textures/city.png")
 }
 {% endhighlight %}
@@ -155,7 +144,7 @@ In order to add the `RenderSystem` to our `engo`-game, we want to add it within 
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
-func (*myGame) Setup(world *ecs.World) {
+func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&engo.RenderSystem{})
 }
 {% endhighlight %}
@@ -166,37 +155,44 @@ More speficially, an instance of the `RenderSystem` is added to the `World` of t
 > Each `Scene` has only **one** `World`. And this `World` is a collection of systems and entities.
 
 #### Adding the Entity
-After we've added the `RenderSystem` to the `World`, we are now ready to create our `Entity` and add it as well. `ECS`
-has a helper function called `ecs.NewEntity(...)`, which allows you to easily create new entities. It
-requires one argument: a list of names of `System`s you want to associate it with. Basically, it says: this `System` is
-allowed to (and usually supposed to) read/write my values.
+After we've added the `RenderSystem` to the `World`, we are now ready to create our `Entity` and add it as well. We
+shal begin by defining our `City` struct:
 
-> ##### NewEntity
-> Creating the Entity is as simple as:
-> {% highlight go %}
-entity := ecs.NewEntity("RenderSystem")
+{% highlight go %}
+type City struct {
+    ecs.BasicEntity
+    engo.RenderComponent
+    engo.SpaceComponent
+}
 {% endhighlight %}
 
-Now for the `Component`s: every `Entity` has them. They are the only way of giving value / meaning to entities. We
-mentioned two required `Component`s: the `RenderComponent`, which holds information about what to render (i.e. the
-texture), and the `SpaceComponent`, which holds information about where the `Entity` is located (and thus *where*
-it should be rendered). We can simply initialize these and add them to the newly created `Entity`.
+As you will see, this `City` struct (the 'Entity'), consists of one standard thing (`ecs.BasicEntity`, which provides
+a unique identifier), and two `Component`s: they are the only way you can pass information around different systems,
+like telling the `RenderSystem` what to render. The first (the `RenderComponent`) holds information about what to render
+(i.e. which texture), and the second (the `SpaceComponent`) holds information about *where* it should be rendered. 
+
+In order to correctly instantiate, we need to ensure that `ecs.BasicEntity` is set to a new, unique identifier. We
+can do this by calling `ecs.NewBasic()`. 
+
+{% highlight go %}
+city := City{BasicEntity: ecs.NewBasic()}
+{% endhighlight %}
 
 > ##### SpaceComponent
 > This will locate the `Entity` at 10 units lower and to the right, from the origin. It will be 303 units wide, and
 > 641 units high.
 >
 > {% highlight go %}
-entity.AddComponent(&engo.SpaceComponent{
+city.SpaceComponent = engo.SpaceComponent{
     Position: engo.Point{10, 10},
     Width:    303,
     Height:   641,
-})
+}
 {% endhighlight %}
 
 The `RenderComponent` is a bit tricky though, as it requires us to define which `Texture` to draw. The helper-function
 `engo.NewRenderComponent(texture Drawable, scale engo.Point, label string)` requires you to define that `Texture`,
-give a `Scale` (usually just `engo.Point{1, 1}`), and a label (any string you'd like, unused for the moment).
+and provide a `Scale` (usually just `engo.Point{1, 1}`). 
 
 Luckily, we added the `Texture` during the `Preload()` function, so we can easily access it using
 `engo.Files.Image(...)`.
@@ -205,20 +201,30 @@ Luckily, we added the `Texture` during the `Preload()` function, so we can easil
 >
 > {% highlight go %}
 texture := engo.Files.Image("city.png")
-entity.AddComponent(engo.NewRenderComponent(
+city.RenderComponent = engo.NewRenderComponent(
     texture,
-    engo.Point{1, 1},
-    "city texture",
-))
+    engo.Point{1, 1}
+)
 {% endhighlight %}
 
-Now we've completed the `Entity`, we should not forget to use it:
+Now we've completed the `Entity`, we should not forget to add it to the appropriate systems:
 
-> ##### Adding the `Entity` to the `World`
+> ##### Adding the `City` to the `World`
 >
 > {% highlight go %}
-world.AddEntity(entity)
+for _, system := range world.Systems() {
+    switch sys := system.(type) {
+    case *engo.RenderSystem:
+        sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
+    }
+}
 {% endhighlight %}
+
+What are we doing? We're looping over all known Systems, to see if one is of type `engo.RenderSystem`. If that is the 
+case, we're using the RenderSystem-specific `Add` method to add our `City` to that system. This system requires three
+parametesr: reference to `BasicEntity`, reference to `RenderComponent` and reference to `SpaceComponent`. We have all
+of those, so we can easily do this. If we were to add our `City` to more systems, we could simply add additional
+`case` clauses here, and call the appropriate `Add` functions. 
 
 If we were to run our game (`go run traffic.go`), the result should look something like this:
 
