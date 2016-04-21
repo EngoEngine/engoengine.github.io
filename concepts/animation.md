@@ -48,7 +48,7 @@ Renderables() []Renderable
 First, we need to create a spritesheet. Let's load a texture. We can define a Preload() method in our GameWorld:
 
 ```go
-func (game *GameWorld) Preload() {
+func (*DefaultScene) Preload() {
   engo.Files.Add("assets/hero.png")
 }
 ```
@@ -62,14 +62,26 @@ now we need to take a look at our spritesheet and check which frames correspond 
 once we have that jotted down we can in setup method instantiate Spritesheet and AnimationAction 
 
 ```go
-func (game *GameWorld) Setup() {
+func (*DefaultScene) Setup(w *ecs.World)) {
+  game.AddSystem(&engo.RenderSystem{})
+  game.AddSystem(&engo.AnimationSystem{})
+
   spriteSheet := engo.NewSpritesheetFromFile("hero.png", 150, 150)
 
   animationAction := &engo.AnimationAction{Name: "run", Frames: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}
 
-  game.AddSystem(&engo.RenderSystem{})
-  game.AddSystem(&engo.AnimationSystem{})
+  hero := scene.CreateEntity(&engo.Point{0, 0}, spriteSheet, animationAction)
 
-  game.AddEntity(game.CreateEntity(&engo.Point{0, 0}, spriteSheet, game.RUN_ACTION))
+  // Add our hero to the appropriate systems
+  	for _, system := range w.Systems() {
+  		switch sys := system.(type) {
+  		case *engo.RenderSystem:
+  			sys.Add(&hero.BasicEntity, &hero.RenderComponent, &hero.SpaceComponent)
+  		case *engo.AnimationSystem:
+  			sys.Add(&hero.BasicEntity, &hero.AnimationComponent, &hero.RenderComponent)
+  		case *ControlSystem:
+  			sys.Add(&hero.BasicEntity, &hero.AnimationComponent)
+  		}
+  	}
 }
 ```
