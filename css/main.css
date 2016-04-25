@@ -2,3 +2,4 @@ body     { text-align: center }
 footer p { font-size: small; color: gray; }
 h1 a     { color: black }
 .row     { max-width: 35rem }
+#logo    { height: 10rem; display: block; margin: 0 auto }
