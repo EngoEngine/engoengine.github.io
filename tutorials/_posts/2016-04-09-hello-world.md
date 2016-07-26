@@ -100,7 +100,7 @@ We shall save this file within the `assets/textures` directory.
 
 ### Loading the texture into the game
 We have to load the actual file from the disk. Fortunately, `engo` has helper-functions available within
-`engo.Files`. It has an `Add` function, which allows us to specify the location of one or more files, and they
+`engo.Files`. It has an `Load` function, which allows us to specify the location of one or more files, and they
 automatically get loaded once the `Preload()` function returns.
 
 Applying this, we get:
@@ -109,7 +109,7 @@ Applying this, we get:
 // Preload is called before loading any assets from the disk,
 // to allow you to register / queue them
 func (*myScene) Preload() {
-	engo.Files.Add("assets/textures/city.png")
+	engo.Files.Load("textures/city.png")
 }
 {% endhighlight %}
 
@@ -140,12 +140,15 @@ about the modularity of the entities.
 
 #### Adding the System
 In order to add the `RenderSystem` to our `engo`-game, we want to add it within the `Setup` function of our `Scene`.
+`RenderSystem` is located in the engo.io/engo/common package, along with other frequently used systems.
 
 {% highlight go %}
+import "engo.io/engo/common"
+
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
 func (*myScene) Setup(world *ecs.World) {
-	world.AddSystem(&engo.RenderSystem{})
+	world.AddSystem(&common.RenderSystem{})
 }
 {% endhighlight %}
 
@@ -160,9 +163,9 @@ shal begin by defining our `City` struct:
 
 {% highlight go %}
 type City struct {
-    ecs.BasicEntity
-    engo.RenderComponent
-    engo.SpaceComponent
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
 }
 {% endhighlight %}
 
@@ -183,28 +186,29 @@ city := City{BasicEntity: ecs.NewBasic()}
 > 641 units high.
 >
 > {% highlight go %}
-city.SpaceComponent = engo.SpaceComponent{
+city.SpaceComponent = common.SpaceComponent{
     Position: engo.Point{10, 10},
     Width:    303,
     Height:   641,
 }
 {% endhighlight %}
 
-The `RenderComponent` is a bit tricky though, as it requires us to define which `Texture` to draw. The helper-function
-`engo.NewRenderComponent(texture Drawable, scale engo.Point, label string)` requires you to define that `Texture`,
-and provide a `Scale` (usually just `engo.Point{1, 1}`). 
-
-Luckily, we added the `Texture` during the `Preload()` function, so we can easily access it using
-`engo.Files.Image(...)`.
+The `common.RenderComponent` is a bit tricky though, as it requires us to define a `Texture` to draw, and provide a `Scale` 
+value (usually just `engo.Point{1, 1}`). The helper-function `common.PreloadedSpriteSingle(url string)` will provide a
+reference to the sprite that was preloaded earlier during the `Preload()` function.
 
 > ##### RenderComponent
 >
 > {% highlight go %}
-texture := engo.Files.Image("city.png")
-city.RenderComponent = engo.NewRenderComponent(
-    texture,
-    engo.Point{1, 1}
-)
+texture, err := common.PreloadedSpriteSingle("textures/city.png")
+if err != nil {
+    log.Println("Unable to load texture: " + err.Error())
+}
+
+city.RenderComponent = common.RenderComponent{
+    Drawable: texture,
+    Scale:    engo.Point{1, 1},
+}
 {% endhighlight %}
 
 Now we've completed the `Entity`, we should not forget to add it to the appropriate systems:
@@ -214,13 +218,13 @@ Now we've completed the `Entity`, we should not forget to add it to the appropri
 > {% highlight go %}
 for _, system := range world.Systems() {
     switch sys := system.(type) {
-    case *engo.RenderSystem:
+    case *common.RenderSystem:
         sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
     }
 }
 {% endhighlight %}
 
-What are we doing? We're looping over all known Systems, to see if one is of type `engo.RenderSystem`. If that is the 
+What are we doing? We're looping over all known Systems, to see if one is of type `common.RenderSystem`. If that is the 
 case, we're using the RenderSystem-specific `Add` method to add our `City` to that system. This system requires three
 parametesr: reference to `BasicEntity`, reference to `RenderComponent` and reference to `SpaceComponent`. We have all
 of those, so we can easily do this. If we were to add our `City` to more systems, we could simply add additional
@@ -245,7 +249,7 @@ to white instead:
 > You can change the background color with this line of code:
 >
 > {% highlight go %}
-engo.SetBackground(color.White)
+common.SetBackground(color.White)
 {% endhighlight %}
 >
 > Note that we're using `color`, so be sure to import `image/color`. It's in the standard library. This line of code
