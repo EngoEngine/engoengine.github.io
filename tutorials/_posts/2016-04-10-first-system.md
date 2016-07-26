@@ -71,16 +71,16 @@ exact contents of the `CityBuildingSystem` described above. However, we do add `
 Now that we've created the `System`, let's add it to our game. The usual way to add `System`s to a game, is by doing
 it within the `Setup` function of the `Scene` you're going to use. Since we don't want this to interfere with the
 big *City* icon we created in the previous tutorial, we are not only going to add the `System`, but also remove 
-the `Entity` we created last week. 
+the `Entity` we created in the last tutorial. 
 
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you 
 // to add entities and systems to your Scene.
 func (*myScene) Setup(world *ecs.World) {
-	engo.SetBackground(color.White)
-
+	common.SetBackground(color.White)
+	world.AddSystem(&common.RenderSystem{})
+	
 	world.AddSystem(&systems.CityBuildingSystem{})
-	world.AddSystem(&engo.RenderSystem{})
 }
 {% endhighlight %}
 
@@ -103,16 +103,28 @@ func (*CityBuildingSystem) New(*ecs.World) {
 ### Step 3: Figuring out when **F1** is pressed
 We want to spawn a *City* whenever someone presses **F1**, so it makes sense that we want to know *when* this happens. 
 
-For this, we will check "did the gamer press **F1**", on every frame. The `Update` function of our `CityBuildingSystem`
+First, we need to tell the Engo to listen for the F1 key press. We'll do this by using the 
+`engo.Input.RegisterButton(name string, keys Key...)` function. Multiple keys can be be assigned to one identifier.
+
+Add the following line to the `Setup` function for your `Scene`.
+{% highlight go %}
+func (*myScene) Setup(world *ecs.World) {
+	engo.Input.RegisterButton("AddCity", engo.F1)
+	common.SetBackground(color.White)
+	world.AddSystem(&common.RenderSystem{})
+	
+	world.AddSystem(&systems.CityBuildingSystem{})
+}
+{% endhighlight %}
+
+We will check "did the gamer press **F1**", on every frame. The `Update` function of our `CityBuildingSystem`
 gets called every frame by the `World`. So our checking-code needs to be written there. Engo has a neat feature which
 allows you to lookup the state of keys, such as:
 
 * `Down()`: when the button is pressed; will be true as long as the user holds the button, 
-* ` Up()`: opposite of `Down()`,
 * `JustPressed()`: when the button was just pressed; will be true for one frame, and cannot become true again unless the 
 button was released first, 
 * `JustReleased()`: same as `JustPressed()`, but with releasing the button instead of pressing it,
-* `State()`: returns a `string` representation of the four functions above.
 
 We don't want to risk placing two cities on top of each other in a very short time period (it's very likely that the
 key is pressed longer than one frame, because a frame usually lasts between 16.6ms and 6.94ms). Therefore, we shall use
@@ -122,7 +134,7 @@ the `JustPressed()` function.
 // Update is ran every frame, with `dt` being the time
 // in seconds since the last frame
 func (*CityBuildingSystem) Update(dt float32) {
-	if engo.Keys.Get(engo.F1).JustPressed() {
+	if engo.Input.Button("AddCity").JustPressed()  {
 		fmt.Println("The gamer pressed F1")
 	}
 }
@@ -139,22 +151,25 @@ Remember the code we used for the large *City*-icon we removed?
 {% highlight go %}
 city := City{BasicEntity: ecs.NewBasic()}
 
-city.SpaceComponent = engo.SpaceComponent{
+city.SpaceComponent = common.SpaceComponent{
     Position: engo.Point{10, 10},
     Width: 303,
     Height: 641,
 }
 
-texture := engo.Files.Image("city.png")
-city.RenderComponent = engo.NewRenderComponent(
-    texture,
-    engo.Point{1, 1},
-    "city texture",
-)
+texture, err := common.PreloadedSpriteSingle("textures/city.png")
+if err != nil {
+    log.Println("Unable to load texture: " + err.Error())
+}
+
+city.RenderComponent = common.RenderComponent{
+    Drawable: texture,
+    Scale:    engo.Point{1, 1},
+}
 
 for _, system := range world.Systems() {
     switch sys := system.(type) {
-    case *engo.RenderSystem:
+    case *common.RenderSystem:
         sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
     }
 }
@@ -172,23 +187,26 @@ As stated, we can easily change the size, by changing the numbers. However, chan
 instead of `1`:
 
 {% highlight go %}
-city.SpaceComponent = engo.SpaceComponent{
+city.SpaceComponent = common.SpaceComponent{
     Position: engo.Point{10, 10},
     Width: 30,
     Height: 64,
 }
 
-texture := engo.Files.Image("city.png")
-city.RenderComponent = engo.NewRenderComponent(
-    texture,
-    engo.Point{0.1, 0.1},
-    "city texture",
+texture, err := common.PreloadedSpriteSingle("textures/city.png")
+if err != nil {
+    log.Println("Unable to load texture: " + err.Error())
+}
+
+city.RenderComponent = common.NewRenderComponent(
+    Drawable: texture,
+    Scale: engo.Point{0.1, 0.1},
 )
 {% endhighlight %}
 
 #### The location
 In order to spawn them at the correct location, we need to know where the cursor is. Our first guess might be to use
-the `engo.Mouse` struct which is available. However, this one returns the actual `(X, Y)` location relative to the 
+the `common.Mouse` struct which is available. However, this one returns the actual `(X, Y)` location relative to the 
 screen size, not the in-game grid system. We have a special `MouseSystem` available for just that. 
 
 ##### The `MouseSystem`
@@ -197,10 +215,11 @@ The first thing you want to do, is add the `MouseSystem` to your `Scene`:
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you to add entities and systems to your Scene.
 func (*myGame) Setup(world *ecs.World) {
-	engo.SetBackground(color.White)
+	engo.Input.RegisterButton("AddCity", engo.F1)
+	common.SetBackground(color.White)
 
-	world.AddSystem(&engo.MouseSystem{})
-	world.AddSystem(&engo.RenderSystem{})
+	world.AddSystem(&common.RenderSystem{})
+	world.AddSystem(&common.MouseSystem{})
 	
 	world.AddSystem(&systems.CityBuildingSystem{})
 }
@@ -218,7 +237,7 @@ We first will update our `CityBuildingSystem` to contain the new `Entity`:
 {% highlight go %}
 type MouseTracker struct {
     ecs.BasicEntity
-    engo.MouseComponent
+    common.MouseComponent
 }
 
 type CityBuildingSystem struct {
@@ -235,11 +254,11 @@ func (cb *CityBuildingSystem) New(w *ecs.World) {
 	fmt.Println("CityBuildingSystem was added to the Scene")
 	
 	cb.mouseTracker.BasicEntity = ecs.NewBasic()
-	cb.mouseTracker.MouseComponent = engo.MouseComponent{Track: true}
+	cb.mouseTracker.MouseComponent = common.MouseComponent{Track: true}
 	
 	for _, system := range w.Systems() {
 		switch sys := system.(type) {
-		case *engo.MouseSystem:
+		case *common.MouseSystem:
 			sys.Add(&cb.mouseTracker.BasicEntity, &cb.mouseTracker.MouseComponent, nil, nil)
 		}
 	}
@@ -261,27 +280,30 @@ The `MouseSystem` updates the `mouseTracker.MouseComponent` every frame. Everyth
 // Update is ran every frame, with `dt` being the time
 // in seconds since the last frame
 func (cb *CityBuildingSystem) Update(dt float32) {
-	if engo.Keys.Get(engo.F1).JustPressed() {
+	if engo.Input.Button("AddCity").JustPressed() {
 		fmt.Println("The gamer pressed F1")
 
 		city := City{ecs.NewBasic()}
 
-		city.SpaceComponent = engo.SpaceComponent{
-			Position: engo.Point{cb.mouseTracker.MouseComponent.MouseX, cb.mouseTracker.MouseComponent.MouseY},
+		city.SpaceComponent = common.SpaceComponent{
+			Position: engo.Point{cb.mouseTracker.MouseX, cb.mouseTracker.MouseY},
 			Width:    30,
 			Height:   64,
 		}
 
-		texture := engo.Files.Image("city.png")
-		city.RenderComponent = engo.NewRenderComponent(
-			texture,
-			engo.Point{0.1, 0.1},
-			"city texture",
-		)
+		texture, err := common.PreloadedSpriteSingle("textures/city.png")
+		if err != nil {
+			panic("Unable to load texture: " + err.Error())
+		}
+
+		city.RenderComponent = common.RenderComponent{
+			Drawable: texture,
+			Scale:    engo.Point{X: 0.1, Y: 0.1},
+		}
 
 		for _, system := range world.Systems() {
 			switch sys := system.(type) {
-			case *engo.RenderSystem:
+			case *common.RenderSystem:
 				sys.Add(&city.BasicEntity, &city.RenderComponent, &city.SpaceComponent)
 			}
 		}
