@@ -194,7 +194,7 @@ city.SpaceComponent = common.SpaceComponent{
 {% endhighlight %}
 
 The `common.RenderComponent` is a bit tricky though, as it requires us to define a `Texture` to draw, and provide a `Scale` 
-value (usually just `engo.Point{1, 1}`). The helper-function `common.PreloadedSpriteSingle(url string)` will provide a
+value (usually just `engo.Point{1, 1}`). The helper-function `common.LoadedSprite(url string)` will provide a
 reference to the sprite that was preloaded earlier during the `Preload()` function.
 
 > ##### RenderComponent
