@@ -175,7 +175,7 @@ like telling the `RenderSystem` what to render. The first (the `RenderComponent`
 (i.e. which texture), and the second (the `SpaceComponent`) holds information about *where* it should be rendered. 
 
 In order to correctly instantiate, we need to ensure that `ecs.BasicEntity` is set to a new, unique identifier. We
-can do this by calling `ecs.NewBasic()`. 
+can do this by calling `ecs.NewBasic()` in our Setup function. 
 
 {% highlight go %}
 city := City{BasicEntity: ecs.NewBasic()}
