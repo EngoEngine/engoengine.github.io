@@ -56,24 +56,19 @@ The magic number `400` here, is the speed at which the camera should move. It's 
 at zoom level 1x (so everything is at 100%), it will move 400 units per second. You can change this to any value 
 you feel fits to your game. 
 
-You can now move around using the WASD-keys. If we also want to allow the use of the arrow keys, we can use the
-`BindKeyboard` method, available on the `KeyboardSystem`:
+We must also tell Engo what keys will move us around. For now, we can simply use the default settings to do so, by changing our run options:
 
 {% highlight go %}
-// Setup is called before the main loop starts. It allows you to add entities and systems to your Scene.
-func (*myScene) Setup(world *ecs.World) {
-	engo.SetBackground(color.White)
-
-	world.AddSystem(&engo.MouseSystem{})
-	world.AddSystem(&engo.RenderSystem{})
-	
-	kbs := engo.NewKeyboardScroller(400, engo.W, engo.D, engo.S, engo.A)
-	kbs.BindKeyboard(engo.ArrowUp, engo.ArrowRight, engo.ArrowDown, engo.ArrowLeft)
-	world.AddSystem(kbs)
-
-	world.AddSystem(&systems.CityBuildingSystem{})
+opts := engo.RunOptions{
+	Title:          "Traffic Manager",
+	Width:          worldWidth,
+	Height:         worldHeight,
+	StandardInputs: true,
 }
+
 {% endhighlight %}
+
+You can now move around using the arrow keys.
 
 
 #### EdgeScroller
