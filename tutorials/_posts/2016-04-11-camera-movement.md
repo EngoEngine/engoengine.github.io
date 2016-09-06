@@ -25,10 +25,11 @@ change the X-axis, Y-axis and Z-axis (viewing distance). The angle itself isn't 
 > You may not add the `CameraSystem` manually to the `World`. This happens automatically. 
 
 There are a few ways to use this `CameraSystem`, and each one will be discussed separately:
+
 * By adding the `engo.KeyboardScroller`, you can move around using predefined keys;
 * By adding the `engo.EdgeScroller`, you can move around by moving your cursor close to the edges of the screen;
 * By adding the `engo.MouseZoomer`, you can zoom in/out by using the scroll-wheel on your mouse;
-* By sending a `CameraMessage` through the `Mailbox`. What the Mailbox is, will also be explained. 
+* By sending a `CameraMessage` through the `Mailbox`. What the Mailbox is will also be explained. 
 
 #### KeyboardScroller
 The `KeyboardScroller` is another System - one that listens for keyboard input and moves the screen accordingly. 
@@ -41,7 +42,10 @@ func (*myScene) Setup(world *ecs.World) {
 
 	world.AddSystem(&engo.MouseSystem{})
 	world.AddSystem(&engo.RenderSystem{})
-	world.AddSystem(engo.NewKeyboardScroller(400, engo.W, engo.D, engo.S, engo.A))
+	kbs := common.NewKeyboardScroller(
+		KeyboardScrollSpeed, engo.DefaultHorizontalAxis,
+		engo.DefaultVerticalAxis))
+	world.AddSystem(kbs)
 
 	world.AddSystem(&systems.CityBuildingSystem{})
 }
