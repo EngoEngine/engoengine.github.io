@@ -36,13 +36,13 @@ func main() {
 {% endhighlight %}
 
 
-There is one function in `engo` that will allow you to start your game / window: `engo.Run(RunOptions, Scene)`. As you
+There is one function in `engo` that will allow you to start your game/window: `engo.Run(RunOptions, Scene)`. As you
 see, there are two parameters to this function: one of type `RunOptions`, where you can set things like `Fullscreen`,
 `FPSLimit`, `VSync`, and much more, and the second one is your default `Scene`.
 
 > #### Scenes
-> Scenes are the barebone of `engo`: they contain pretty much all other things within the game. You should have multiple
-> scenes and switch between them: i.e. one for the main menu, another for the loading screen, and yet another for the
+> Scenes are the backbone of `engo`: they contain pretty much all other things within the game. You should have multiple
+> scenes and switch between them: e.g. one for the main menu, another for the loading screen, and yet another for the
 > in-game experience. Specifically, a `Scene` contains **one** `World`, a collection of multiple `System`s and a
 > magnitude of `Entity`s - we will be creating those in the next tutorial.
 
@@ -79,7 +79,7 @@ func main() {
 }
 {% endhighlight %}
 
-Currently, this `Scene` does nothing. But it will compile and run. It'll open up a window, with the title "Hello World".
+Currently, this `Scene` does nothing. But it will compile and run, and open up a window with the title "Hello World".
 
 ### Preparing our first Texture
 We want to render something onto the screen at this point. For this, we want to create a new directory within our
@@ -100,7 +100,7 @@ We shall save this file within the `assets/textures` directory.
 
 ### Loading the texture into the game
 We have to load the actual file from the disk. Fortunately, `engo` has helper-functions available within
-`engo.Files`. It has an `Load` function, which allows us to specify the location of one or more files, and they
+`engo.Files`. It has a `Load` function, which allows us to specify the location of one or more files, and they
 automatically get loaded once the `Preload()` function returns.
 
 Applying this, we get:
@@ -123,15 +123,15 @@ Rendering something consists of three things:
 #### ECS
 The three different types mentioned here, form the ECS (Entity Component System). The idea is quite simple: you have
 a lot of entities (objects). These can have different values and variables - these form the different components each
-entity can have. Entities which have a `SpaceComponent` for example, have some information as to their location
+entity can have. Entities which have a `SpaceComponent`, for example, have some information as to their location
 (in the game*space*). These entities and components do nothing at all. They are just glorified data containers. A
 `Component` can have variables (and values for those variables), and an `Entity` is just a glorified `[]Component`.
 
-**Doing** something, is something only systems are allowed to. They can change/add/remove entities, as well as change/add/remove any
+Actually **doing** something is permitted only for systems. They can change/add/remove entities, as well as change/add/remove any
 components on those entities. They can change values like the location-values within the `SpaceComponent`. You can have
-multiple systems, and each of them has its own task. Each frame, these systems are called so they can do things. They
-will usually do things with entities. The `RenderSystem` is one of the system we have made, which already has a lot of
-OpenGL-calls builtin (so you don't have to worry about those just yet). You will learn about creating your own
+multiple systems, and each of them will have its own task. Each frame, these systems are called so they can do things. They
+will usually do things with entities. The `RenderSystem` is one of the systems we have made, which already has a lot of
+OpenGL calls built-in (so you don't have to worry about those just yet). You will learn about creating your own
 `System` in [tutorial 2](/tutorials/02-first-system).
 
 [This YouTube video](https://www.youtube.com/watch?v=BvEK9-CU5Og) gives a (short) visual explanation of the
@@ -152,14 +152,14 @@ func (*myScene) Setup(world *ecs.World) {
 }
 {% endhighlight %}
 
-More speficially, an instance of the `RenderSystem` is added to the `World` of this specific `Scene`.
+More specifically, an instance of the `RenderSystem` is added to the `World` of this specific `Scene`.
 
 > ##### Do you recall?
 > Each `Scene` has only **one** `World`. And this `World` is a collection of systems and entities.
 
 #### Adding the Entity
 After we've added the `RenderSystem` to the `World`, we are now ready to create our `Entity` and add it as well. We
-shal begin by defining our `City` struct:
+shall begin by defining our `City` struct:
 
 {% highlight go %}
 type City struct {
@@ -175,7 +175,7 @@ like telling the `RenderSystem` what to render. The first (the `RenderComponent`
 (i.e. which texture), and the second (the `SpaceComponent`) holds information about *where* it should be rendered. 
 
 In order to correctly instantiate, we need to ensure that `ecs.BasicEntity` is set to a new, unique identifier. We
-can do this by calling `ecs.NewBasic()`. 
+can do this by calling `ecs.NewBasic()` in our Setup function. 
 
 {% highlight go %}
 city := City{BasicEntity: ecs.NewBasic()}
@@ -211,7 +211,7 @@ city.RenderComponent = common.RenderComponent{
 }
 {% endhighlight %}
 
-Now we've completed the `Entity`, we should not forget to add it to the appropriate systems:
+Now that we've completed the `Entity`, we should not forget to add it to the appropriate systems:
 
 > ##### Adding the `City` to the `World`
 >
@@ -226,11 +226,11 @@ for _, system := range world.Systems() {
 
 What are we doing? We're looping over all known Systems, to see if one is of type `common.RenderSystem`. If that is the 
 case, we're using the RenderSystem-specific `Add` method to add our `City` to that system. This system requires three
-parametesr: reference to `BasicEntity`, reference to `RenderComponent` and reference to `SpaceComponent`. We have all
+parameters: pointers to a `BasicEntity`, a `RenderComponent`, and a `SpaceComponent`. We have all
 of those, so we can easily do this. If we were to add our `City` to more systems, we could simply add additional
 `case` clauses here, and call the appropriate `Add` functions. 
 
-If we were to run our game (`go run traffic.go`), the result should look something like this:
+If run our game (`go run traffic.go`), the result should look something like this:
 
 <figure class="callout text-center">
 <a href="/img/tutorials/01/black.png" target="_blank">
@@ -252,11 +252,11 @@ to white instead:
 common.SetBackground(color.White)
 {% endhighlight %}
 >
-> Note that we're using `color`, so be sure to import `image/color`. It's in the standard library. This line of code
-> should go somewhere within the `Setup` function, and preferably at the top. However, it's not mandatory to put it
-> *there*, and you can dynamically change the background color as you please.
+> We're using `color` now, so be sure to import `image/color` from the standard library. For our purposes,
+> this line of code should go somewhere within the `Setup` function, and preferably at the top. However, 
+> it's not mandatory to put it there, and you can dynamically change the background color as you please.
 
-It our game looks like this:
+Now our game looks like this:
 
 <figure class="callout text-center">
 <a href="/img/tutorials/01/white.png" target="_blank">
