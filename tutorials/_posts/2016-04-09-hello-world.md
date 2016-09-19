@@ -200,7 +200,7 @@ reference to the sprite that was preloaded earlier during the `Preload()` functi
 > ##### RenderComponent
 >
 > {% highlight go %}
-texture, err := common.PreloadedSpriteSingle("textures/city.png")
+texture, err := common.LoadedSprite("textures/city.png")
 if err != nil {
     log.Println("Unable to load texture: " + err.Error())
 }
