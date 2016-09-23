@@ -26,9 +26,9 @@ change the X-axis, Y-axis and Z-axis (viewing distance). The angle itself isn't 
 
 There are a few ways to use this `CameraSystem`, and each one will be discussed separately:
 
-* By adding the `engo.KeyboardScroller`, you can move around using predefined keys;
-* By adding the `engo.EdgeScroller`, you can move around by moving your cursor close to the edges of the screen;
-* By adding the `engo.MouseZoomer`, you can zoom in/out by using the scroll-wheel on your mouse;
+* By adding the `common.KeyboardScroller`, you can move around using predefined keys;
+* By adding the `common.EdgeScroller`, you can move around by moving your cursor close to the edges of the screen;
+* By adding the `common.MouseZoomer`, you can zoom in/out by using the scroll-wheel on your mouse;
 * By sending a `CameraMessage` through the `Mailbox`. What the Mailbox is will also be explained. 
 
 #### KeyboardScroller
@@ -76,7 +76,7 @@ The `EdgeScroller` is just like the `KeyboardScroller`, a plug-and-play system w
 
 Its usage is pretty much the same as the `KeyboardScroller`:
 {% highlight go %}
-world.AddSystem(&engo.EdgeScroller{400, 20})
+world.AddSystem(&common.EdgeScroller{400, 20})
 {% endhighlight %}
 
 It uses the same scroll-speed as the KeyboardScroller (`400`) in this case. The magic number `20` here is the number
@@ -87,7 +87,7 @@ number, the sooner this system will decide to move the camera around.
 As with the other two, the `ScrollZoomer` is a `System` we can add to our game. 
 
 {% highlight go %}
-world.AddSystem(&engo.MouseZoomer{-0.125})
+world.AddSystem(&common.MouseZoomer{-0.125})
 {% endhighlight %}
 
 The magic number `-0.125` is the zoom speed. The fact that this number is negative indicates that scrolling down 
