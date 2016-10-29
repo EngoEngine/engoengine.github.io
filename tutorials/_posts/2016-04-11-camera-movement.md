@@ -43,7 +43,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&engo.MouseSystem{})
 	world.AddSystem(&engo.RenderSystem{})
 	kbs := common.NewKeyboardScroller(
-		KeyboardScrollSpeed, engo.DefaultHorizontalAxis,
+		400, engo.DefaultHorizontalAxis,
 		engo.DefaultVerticalAxis))
 	world.AddSystem(kbs)
 
@@ -52,9 +52,9 @@ func (*myScene) Setup(world *ecs.World) {
 
 {% endhighlight %}
 
-The magic number `400` here, is the speed at which the camera should move. It's mostly a relative number, meaning:
+The magic number `400` here is the speed at which the camera moves. It's mostly a relative number, meaning:
 at zoom level 1x (so everything is at 100%), it will move 400 units per second. You can change this to any value 
-you feel fits to your game. 
+you feel fits to your game.
 
 We must also tell Engo what keys will move us around. For now, we can simply use the default settings to do so, by changing our run options:
 
