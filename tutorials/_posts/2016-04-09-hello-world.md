@@ -9,7 +9,7 @@ In this tutorial, we will create our first window in `engo`.
 
 > #### Recap
 > Remember what we did in [the last tutorial](/tutorials/00-foreword)?
-> We created the directory `$GOPATH/github.com/EngoEngine/TrafficManager` - and will be working from this directory
+> We created the directory `$GOPATH/src/github.com/EngoEngine/TrafficManager` - and will be working from this directory
 > from now on. All `go`-commands will be executed from this working directory. You will probably be
 > working from some similar directory.
 
