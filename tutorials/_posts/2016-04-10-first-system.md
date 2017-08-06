@@ -193,7 +193,7 @@ city.SpaceComponent = common.SpaceComponent{
     Height: 64,
 }
 
-texture, err := common.PreloadedSpriteSingle("textures/city.png")
+texture, err := common.LoadedSprite("textures/city.png")
 if err != nil {
     log.Println("Unable to load texture: " + err.Error())
 }
@@ -283,7 +283,7 @@ func (cb *CityBuildingSystem) Update(dt float32) {
 	if engo.Input.Button("AddCity").JustPressed() {
 		fmt.Println("The gamer pressed F1")
 
-		city := City{ecs.NewBasic()}
+		city := City{BasicEntity: ecs.NewBasic()}
 
 		city.SpaceComponent = common.SpaceComponent{
 			Position: engo.Point{cb.mouseTracker.MouseX, cb.mouseTracker.MouseY},
@@ -291,7 +291,7 @@ func (cb *CityBuildingSystem) Update(dt float32) {
 			Height:   64,
 		}
 
-		texture, err := common.PreloadedSpriteSingle("textures/city.png")
+		texture, err := common.LoadedSprite("textures/city.png")
 		if err != nil {
 			panic("Unable to load texture: " + err.Error())
 		}
