@@ -283,7 +283,7 @@ func (cb *CityBuildingSystem) Update(dt float32) {
 	if engo.Input.Button("AddCity").JustPressed() {
 		fmt.Println("The gamer pressed F1")
 
-		city := City{ecs.NewBasic()}
+		city := City{BasicEntity: ecs.NewBasic()}
 
 		city.SpaceComponent = common.SpaceComponent{
 			Position: engo.Point{cb.mouseTracker.MouseX, cb.mouseTracker.MouseY},
