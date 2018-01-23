@@ -3,10 +3,10 @@ layout: tutorial
 title: Mobile
 ---
 
-The `engo` game engine, and Go in general, has a two ways to build for a
+The `engo` game engine, and Go in general, has two ways to build for a
 mobile device: binding or building.
 
-First, you'll need to [install goMobile] (https://github.com/golang/go/wiki/Mobile).
+First, you'll need to [install Go Mobile] (https://github.com/golang/go/wiki/Mobile).
 
 ## Using gomobile build
 
@@ -21,7 +21,7 @@ A few caveats:
 
 * All your asset files must be in the asset folder to be accessed
 * You only have access to touch input and ogl. So you can't use things like
-Facebook or adMob's sdks. This includes things like gradle and pro-guard
+Facebook or AdMob's sdks. This includes things like gradle and pro-guard
 * You'll get a generic AndroidManifest, unless you include one yourself in the
 same folder as your main package
 
