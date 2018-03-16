@@ -261,7 +261,7 @@ Now our game looks like this:
 <figure class="callout text-center">
 <a href="/img/tutorials/01/white.png" target="_blank">
 <img alt="City texture" src="/img/tutorials/01/white.png" style="height:200px">
-<figcaption>After changing the background color</strong></figcaption>
+<figcaption><strong>After changing the background color</strong></figcaption>
 </a>
 </figure>
 

@@ -228,7 +228,7 @@ func (*myGame) Setup(world *ecs.World) {
 *Note that we added the other systems before the `CityBuildingSystem`. This is to ensure any systems we might depend
 upon, are already initialized when we're initializing the `CityBuildingSystem`.*
 
-THe `MouseSystem` is mainly written to keep track of mouse-events for entities; you can check whether your `Entity`
+The `MouseSystem` is mainly written to keep track of mouse-events for entities; you can check whether your `Entity`
 has been hovered, clicked, dragged, etc. In order to use it, we therefore need an `Entity` which uses the `MouseSystem`. 
 This one needs to hold a `MouseComponent`, at which the results/data will be saved. 
 
@@ -338,7 +338,7 @@ this:
 <figure class="callout text-center">
 <a href="/img/tutorials/02/cities.png" target="_blank">
 <img alt="City texture" src="/img/tutorials/02/cities.png" style="height:400px">
-<figcaption>The result of tutorial 2, being able to place multiple cities</strong></figcaption>
+<figcaption><strong>The result of tutorial 2, being able to place multiple cities</strong></figcaption>
 </a>
 </figure>
 
