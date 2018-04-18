@@ -67,7 +67,7 @@ func (*myScene) Preload() {}
 
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
-func (*myScene) Setup(*ecs.World) {}
+func (*myScene) Setup(engo.Updater) {}
 
 func main() {
 	opts := engo.RunOptions{
