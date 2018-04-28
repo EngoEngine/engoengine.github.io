@@ -86,7 +86,7 @@ func (*myScene) Setup(world *ecs.World) {
 
 > ##### How do we know it works?
 > At the moment, we can't be sure it actually works, right?
-> Each system can optionally implement `New(*eces.World)`, which will be called whenever the System is added to the
+> Each system can optionally implement `New(*ecs.World)`, which will be called whenever the System is added to the
 > scene. 
 > 
 > Let's create a `New` function for our `CityBuildingSystem`  like this:
@@ -109,7 +109,7 @@ First, we need to tell the Engo to listen for the F1 key press. We'll do this by
 Add the following line to the `Setup` function for your `Scene`.
 {% highlight go %}
 func (*myScene) Setup(world *ecs.World) {
-	engo.Input.RegisterButton("AddCity", engo.F1)
+	engo.Input.RegisterButton("AddCity", engo.KeyF1)
 	common.SetBackground(color.White)
 	world.AddSystem(&common.RenderSystem{})
 	
