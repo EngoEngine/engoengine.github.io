@@ -143,11 +143,16 @@ In order to add the `RenderSystem` to our `engo`-game, we want to add it within 
 `RenderSystem` is located in the engo.io/engo/common package, along with other frequently used systems.
 
 {% highlight go %}
-import "engo.io/engo/common"
+import (
+	"engo.io/ecs"
+	"engo.io/engo"
+	"engo.io/engo/common"
+)
 
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
-func (*myScene) Setup(world *ecs.World) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
 	world.AddSystem(&common.RenderSystem{})
 }
 {% endhighlight %}

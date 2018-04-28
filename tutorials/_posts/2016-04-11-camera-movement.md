@@ -44,7 +44,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&engo.RenderSystem{})
 	kbs := common.NewKeyboardScroller(
 		400, engo.DefaultHorizontalAxis,
-		engo.DefaultVerticalAxis))
+		engo.DefaultVerticalAxis)
 	world.AddSystem(kbs)
 
 	world.AddSystem(&systems.CityBuildingSystem{})
@@ -83,8 +83,8 @@ It uses the same scroll-speed as the KeyboardScroller (`400`) in this case. The 
 of pixels the cursor has to be near the edge of the screen in order to count as being "near the edge". The higher the 
 number, the sooner this system will decide to move the camera around. 
 
-#### ScrollZoomer
-As with the other two, the `ScrollZoomer` is a `System` we can add to our game. 
+#### MouseZoomer
+As with the other two, the `MouseZoomer` is a `System` we can add to our game. 
 
 {% highlight go %}
 world.AddSystem(&common.MouseZoomer{-0.125})
