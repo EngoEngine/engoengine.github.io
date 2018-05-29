@@ -179,3 +179,6 @@ the lower-right corner (`WorldBounds.Max`).
 
 > We won't be setting it to anything now, because we have no "map" at the moment. 
 
+<div class="button-group stacked">
+<a class="button" href="/tutorials/04-hud">Continue to Tutorial 4: <i>HUD</i> &raquo;</a>
+</div>
