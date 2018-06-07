@@ -18,7 +18,7 @@ give players the cities they're supposed to connect when playing the game.
 
 > #### Final Code
 > The final code **for tutorial 6** is available
-> [here at GitHub](https://github.com/EngoEngine/TrafficManager/tree/06-spritesheets-and-automated-citybuilding).
+> [here at GitHub](https://github.com/EngoEngine/TrafficManager/tree/06-spritesheets-and-automated-city-building).
 
 ### Why use Sprite Sheets?
 
