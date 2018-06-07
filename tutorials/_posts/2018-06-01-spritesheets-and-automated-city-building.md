@@ -56,7 +56,7 @@ First, we'll add to citybuilding.go a variable to hold our spritesheet
 
 {% highlight go %}
 // Spritesheet contains the sprites for the city buildings, cars, and roads
-var Spritesheet \*common.Spritesheet
+var Spritesheet *common.Spritesheet
 {% endhighlight %}
 
 > Note: Spritesheet is exported because it'll be needed by other systems down
@@ -173,7 +173,7 @@ so that we don't build multiple cities on the same tile.
 
 {% highlight go %}
 // generateCity randomly generates a city in a random location on the map
-func (cb \*CityBuildingSystem) generateCity() {
+func (cb *CityBuildingSystem) generateCity() {
 	x := rand.Intn(18)
 	y := rand.Intn(18)
 	t := x + y*18
@@ -189,12 +189,12 @@ func (cb \*CityBuildingSystem) generateCity() {
 	cb.usedTiles = append(cb.usedTiles, t)
 
 	city := rand.Intn(len(cities))
-	cityTiles := make([]\*City, 0)
+	cityTiles := make([]*City, 0)
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 4; j++ {
 			tile := &City{BasicEntity: ecs.NewBasic()}
       tile.SpaceComponent.Position = engo.Point{
-				X: float32(((x+1)\*64)+8) + float32(i*16),
+				X: float32(((x+1)*64)+8) + float32(i*16),
 				Y: float32(((y + 1) * 64)) + float32(j*16),
 			}
 			tile.RenderComponent.Drawable = Spritesheet.Cell(cities[city][i+3*j])
@@ -203,18 +203,18 @@ func (cb \*CityBuildingSystem) generateCity() {
 		}
 	}
 
-	for \_, system := range cb.world.Systems() {
+	for _, system := range cb.world.Systems() {
 		switch sys := system.(type) {
-		case \*common.RenderSystem:
-			for \_, v := range cityTiles {
+		case *common.RenderSystem:
+			for _, v := range cityTiles {
 				sys.Add(&v.BasicEntity, &v.RenderComponent, &v.SpaceComponent)
 			}
 		}
 	}
 }
 
-func (cb \*CityBuildingSystem) isTileUsed(tile int) bool {
-	for \_, t := range cb.usedTiles {
+func (cb *CityBuildingSystem) isTileUsed(tile int) bool {
+	for _, t := range cb.usedTiles {
 		if tile == t {
 			return true
 		}
@@ -247,7 +247,7 @@ shortly. For now, let's add `elapsed float32` to our CityBuildingSystem struct.
 Once we've done that, we'll change our CityBuildingSystem's Update to
 
 {% highlight go %}
-func (cb \*CityBuildingSystem) Update(dt float32) {
+func (cb *CityBuildingSystem) Update(dt float32) {
 	cb.elapsed += dt
 	if cb.elapsed >= 10 {
 		cb.generateCity()
@@ -273,7 +273,7 @@ Our final CityBuildingSystem struct looks like this:
 
 {% highlight go %}
 type CityBuildingSystem struct {
-	world \*ecs.World
+	world *ecs.World
 
 	mouseTracker CityMouseTracker
 
@@ -287,7 +287,7 @@ type CityBuildingSystem struct {
 Our `updateBuildTime()` function looks like:
 
 {% highlight go %}
-func (cb \*CityBuildingSystem) updateBuildTime() {
+func (cb *CityBuildingSystem) updateBuildTime() {
 	switch {
 	case cb.built < 2:
     // 10 to 15 seconds
@@ -314,7 +314,7 @@ func (cb \*CityBuildingSystem) updateBuildTime() {
 And finally, our final `Update()` is:
 
 {% highlight go %}
-func (cb \*CityBuildingSystem) Update(dt float32) {
+func (cb *CityBuildingSystem) Update(dt float32) {
 	cb.elapsed += dt
 	if cb.elapsed >= cb.buildTime {
 		cb.generateCity()
