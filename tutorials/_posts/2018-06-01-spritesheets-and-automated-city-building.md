@@ -329,3 +329,7 @@ Running it now your cities should begin popping up on random tiles, and the dela
 should get shorter as more cities are added. Next time, we'll add some text to
 our HUD and make the cities selectable, which will give you information about
 how the cities are doing!
+
+<div class="button-group stacked">
+<a class="button" href="/tutorials/07-hud-text">Continue to Tutorial 7: <i>HUD Text</i> &raquo;</a>
+</div>
