@@ -13,7 +13,7 @@ give players the cities they're supposed to connect when playing the game.
 
 > #### Recap
 > Remember what we did in [the last tutorial](/tutorials/05-tilemaps)? <br>
-> We utilized a tilemap to add a background to our game. Tilempas are an easy
+> We utilized a tilemap to add a background to our game. Tilemaps are an easy
 > way to create and place maps made up of tiles to our games.
 
 > #### Final Code
