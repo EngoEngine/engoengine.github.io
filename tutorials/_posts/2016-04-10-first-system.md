@@ -104,7 +104,7 @@ func (*CityBuildingSystem) New(*ecs.World) {
 We want to spawn a *City* whenever someone presses **F1**, so it makes sense that we want to know *when* this happens.
 
 First, we need to tell the Engo to listen for the F1 key press. We'll do this by using the
-`engo.Input.RegisterButton(name string, keys Key...)` function. Multiple keys can be be assigned to one identifier.
+`engo.Input.RegisterButton(name string, keys Key...)` function. Multiple keys can be assigned to one identifier.
 
 Add the following line to the `Setup` function for your `Scene`.
 {% highlight go %}
