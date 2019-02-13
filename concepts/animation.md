@@ -49,17 +49,17 @@ First, we need to create a spritesheet. Let's load a texture. We can define a Pr
 
 ```go
 func (*DefaultScene) Preload() {
-  engo.Files.Add("assets/hero.png")
+  engo.Files.Load("assets/hero.png")
 }
 ```
 
 now we need to take a look at our spritesheet and check which frames correspond to our animation. Frames can be accessed using index and:
 
 ```go
-   Rendrable(index int) Renderable
+   Drawable(index int) Drawable
 ```
 
-once we have that jotted down we can in setup method instantiate Spritesheet and AnimationAction 
+once we have that jotted down we can in setup method instantiate Spritesheet and AnimationAction
 
 ```go
 func (*DefaultScene) Setup(w *ecs.World)) {
