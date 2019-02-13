@@ -36,11 +36,11 @@ NewSpritesheetFromTexture(texture *Texture, cellWidth, cellHeight int) *Spritesh
 
 NewSpritesheetFromFile(textureName string, cellWidth, cellHeight int) *Spritesheet
 
-Renderable(index int) Renderable
+Drawable(index int) Drawable
 
 CellCount() int
 
-Renderables() []Renderable
+Drawables() []Drawable
 ```
 
 # How to animate from a symmetrical spritesheet?
