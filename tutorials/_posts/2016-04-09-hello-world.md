@@ -52,8 +52,8 @@ The easiest way to output "Hello World" within `engo`, is by having this `traffi
 package main
 
 import (
-	"engo.io/engo"
-	"engo.io/ecs"
+	"github.com/EngoEngine/engo"
+	"github.com/EngoEngine/ecs"
 )
 
 type myScene struct {}
@@ -140,13 +140,13 @@ about the modularity of the entities.
 
 #### Adding the System
 In order to add the `RenderSystem` to our `engo`-game, we want to add it within the `Setup` function of our `Scene`.
-`RenderSystem` is located in the engo.io/engo/common package, along with other frequently used systems.
+`RenderSystem` is located in the github.com/EngoEngine/engo/common package, along with other frequently used systems.
 
 {% highlight go %}
 import (
-	"engo.io/ecs"
-	"engo.io/engo"
-	"engo.io/engo/common"
+	"github.com/EngoEngine/ecs"
+	"github.com/EngoEngine/engo"
+	"github.com/EngoEngine/engo/common"
 )
 
 // Setup is called before the main loop starts. It allows you
@@ -177,10 +177,10 @@ type City struct {
 As you will see, this `City` struct (the 'Entity'), consists of one standard thing (`ecs.BasicEntity`, which provides
 a unique identifier), and two `Component`s: they are the only way you can pass information around different systems,
 like telling the `RenderSystem` what to render. The first (the `RenderComponent`) holds information about what to render
-(i.e. which texture), and the second (the `SpaceComponent`) holds information about *where* it should be rendered. 
+(i.e. which texture), and the second (the `SpaceComponent`) holds information about *where* it should be rendered.
 
 In order to correctly instantiate, we need to ensure that `ecs.BasicEntity` is set to a new, unique identifier. We
-can do this by calling `ecs.NewBasic()` in our Setup function. 
+can do this by calling `ecs.NewBasic()` in our Setup function.
 
 {% highlight go %}
 city := City{BasicEntity: ecs.NewBasic()}
@@ -198,7 +198,7 @@ city.SpaceComponent = common.SpaceComponent{
 }
 {% endhighlight %}
 
-The `common.RenderComponent` is a bit tricky though, as it requires us to define a `Texture` to draw, and provide a `Scale` 
+The `common.RenderComponent` is a bit tricky though, as it requires us to define a `Texture` to draw, and provide a `Scale`
 value (usually just `engo.Point{1, 1}`). The helper-function `common.LoadedSprite(url string)` will provide a
 reference to the sprite that was preloaded earlier during the `Preload()` function.
 
@@ -229,11 +229,11 @@ for _, system := range world.Systems() {
 }
 {% endhighlight %}
 
-What are we doing? We're looping over all known Systems, to see if one is of type `common.RenderSystem`. If that is the 
+What are we doing? We're looping over all known Systems, to see if one is of type `common.RenderSystem`. If that is the
 case, we're using the RenderSystem-specific `Add` method to add our `City` to that system. This system requires three
 parameters: pointers to a `BasicEntity`, a `RenderComponent`, and a `SpaceComponent`. We have all
 of those, so we can easily do this. If we were to add our `City` to more systems, we could simply add additional
-`case` clauses here, and call the appropriate `Add` functions. 
+`case` clauses here, and call the appropriate `Add` functions.
 
 If run our game (`go run traffic.go`), the result should look something like this:
 
@@ -258,7 +258,7 @@ common.SetBackground(color.White)
 {% endhighlight %}
 >
 > We're using `color` now, so be sure to import `image/color` from the standard library. For our purposes,
-> this line of code should go somewhere within the `Setup` function, and preferably at the top. However, 
+> this line of code should go somewhere within the `Setup` function, and preferably at the top. However,
 > it's not mandatory to put it there, and you can dynamically change the background color as you please.
 
 Now our game looks like this:
