@@ -32,7 +32,7 @@ speeds up rendering of the game.
 ### The Sprite Sheet
 
 The file used for this tutorial, can be downloaded [here](/img/tutorials/06/citySheet.png).
-Extract it into your game's assets/tilemaps folder. You can also remove the
+Extract it into your game's assets/textures folder. You can also remove the
 city.png file as it is no longer needed.
 
 ### Using Sprite Sheets
