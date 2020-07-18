@@ -53,7 +53,6 @@ package main
 
 import (
 	"github.com/EngoEngine/engo"
-	"github.com/EngoEngine/ecs"
 )
 
 type myScene struct {}
@@ -240,7 +239,7 @@ If run our game (`go run traffic.go`), the result should look something like thi
 <figure class="callout text-center">
 <a href="/img/tutorials/01/black.png" target="_blank">
 <img alt="City texture" src="/img/tutorials/01/black.png" style="height:200px">
-<figcaption>Our game so far, with the (default) black background</strong></figcaption>
+<figcaption><strong>Our game so far, with the (default) black background</strong></figcaption>
 </a>
 </figure>
 
