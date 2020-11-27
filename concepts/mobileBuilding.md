@@ -6,7 +6,7 @@ title: Mobile
 The `engo` game engine, and Go in general, has two ways to build for a
 mobile device: binding or building.
 
-First, you'll need to [install Go Mobile] (https://github.com/golang/go/wiki/Mobile).
+First, you'll need to [install Go Mobile](https://github.com/golang/go/wiki/Mobile).
 
 ## Using gomobile build
 
@@ -29,9 +29,8 @@ same folder as your main package
 
 Using bindings allows access to and from the Android system, and you can just
 build into your glue whatever functions you need to be called or to call.
-However, it is more complicated to initially setup. This is taken from [here]
-(https://github.com/Noofbiz/MouseTests) if you want to look at the code while
-reading this.
+However, it is more complicated to initially setup. This is taken from [here](https://github.com/Noofbiz/MouseTests)
+if you want to look at the code while reading this.
 
 #### Setting up your game library
 First thing to notice is the file game.go here. It's an (almost) exact copy of main.go, except it's a library instead of a main package. You'll need to add
