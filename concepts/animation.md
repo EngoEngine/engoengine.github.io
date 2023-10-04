@@ -62,7 +62,8 @@ now we need to take a look at our spritesheet and check which frames correspond 
 once we have that jotted down we can in setup method instantiate Spritesheet and AnimationAction
 
 ```go
-func (*DefaultScene) Setup(w *ecs.World)) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
   game.AddSystem(&engo.RenderSystem{})
   game.AddSystem(&engo.AnimationSystem{})
 
