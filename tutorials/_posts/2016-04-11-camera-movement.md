@@ -37,7 +37,8 @@ The `KeyboardScroller` is another System - one that listens for keyboard input a
 Let's add one in the `Setup` function of our game:
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you to add entities and systems to your Scene.
-func (*myScene) Setup(world *ecs.World) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
 	engo.SetBackground(color.White)
 
 	world.AddSystem(&engo.MouseSystem{})

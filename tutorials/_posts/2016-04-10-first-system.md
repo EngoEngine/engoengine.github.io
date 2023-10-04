@@ -76,7 +76,8 @@ the `Entity` we created in the last tutorial.
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
-func (*myScene) Setup(world *ecs.World) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
 	common.SetBackground(color.White)
 	world.AddSystem(&common.RenderSystem{})
 
@@ -108,7 +109,8 @@ First, we need to tell the Engo to listen for the F1 key press. We'll do this by
 
 Add the following line to the `Setup` function for your `Scene`.
 {% highlight go %}
-func (*myScene) Setup(world *ecs.World) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
 	engo.Input.RegisterButton("AddCity", engo.KeyF1)
 	common.SetBackground(color.White)
 	world.AddSystem(&common.RenderSystem{})
@@ -214,7 +216,8 @@ The first thing you want to do, is add the `MouseSystem` to your `Scene`:
 
 {% highlight go %}
 // Setup is called before the main loop starts. It allows you to add entities and systems to your Scene.
-func (*myGame) Setup(world *ecs.World) {
+func (*myScene) Setup(u engo.Updater) {
+	world, _ := u.(*ecs.World)
 	engo.Input.RegisterButton("AddCity", engo.F1)
 	common.SetBackground(color.White)
 
